@@ -1,0 +1,82 @@
+class TrieNode{
+	TrieNode[] children;
+	boolean isEnd;
+	public TrieNode() {
+		this.isEnd = false;
+		this.children = new TrieNode[26];
+	}
+}
+
+class Solution {
+		TrieNode root = new TrieNode();
+        public String longestWord(String[] words) {
+        if(words.length==0) return null;
+        if(words.length==1) return words[0];
+		
+        String res=new String();
+
+        Arrays.sort(words);
+
+        for(String word : words){
+            insert(word);
+        }
+		
+   for(String word : words){
+
+       if(word.length()==1){
+           if(res.length()==0){
+             res=word;
+
+           }
+       }else{
+
+        if(word.length()>res.length()){
+             boolean check=false;
+			
+            for(int d=1;d<word.length();d++){
+			
+             check= search(word.substring(0,d));
+	
+                if(!check){
+                    break;
+                }
+            }
+		
+            if(check){
+                                res=word;
+
+              }
+			}
+       }     
+    }
+     return res;
+    }
+
+
+	public void insert(String word) {
+		TrieNode cur = root;
+		for (int i = 0; i < word.length(); i++) {
+			int pos = word.charAt(i) - 'a';
+			if (cur.children[pos] == null) {
+				cur.children[pos] = new TrieNode();                
+			}
+			cur = cur.children[pos];            
+		}
+		cur.isEnd = true;
+	}
+    
+	
+	public boolean search(String word) {
+		TrieNode cur = root;
+		for (int i = 0; i < word.length(); i++) {
+			int pos = word.charAt(i) - 'a';
+			if (cur.children[pos] != null) {
+				cur = cur.children[pos];
+			}
+			else {
+				return false;
+			}
+		}
+		return cur.isEnd;
+	}  
+}

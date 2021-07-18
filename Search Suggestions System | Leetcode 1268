@@ -1,0 +1,106 @@
+///// without trie
+class Solution {
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        
+         int N = searchWord.length();
+        
+        List<List<String>> ans = new ArrayList<>(N);
+        
+         PriorityQueue<String> q = new PriorityQueue<>((a,b) -> b.compareTo(a));
+        
+        for(int i = 1 ; i <= N ;i++){
+            
+            String term = searchWord.substring(0,i);
+            
+            for(String s : products){
+                
+                if(s.startsWith(term)){
+                    q.offer(s);
+                }
+                
+                if(q.size() > 3){
+                    q.poll();
+                }
+            }
+            
+            List<String> list = new ArrayList<>(3);
+            
+            while(!q.isEmpty()){
+                list.add(0,q.poll());
+             }    
+          ans.add(list);
+        }
+      return ans;  
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+with trie;
+
+class Solution {
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        //sort product lexicographically
+        Arrays.sort(products);
+        
+        Trie root = new Trie();
+        
+        //add all product
+        for(int i = 0; i < products.length; i++){
+            root.addWord(products[i], i);
+        }
+        
+        //search product 
+        return root.searchWord(searchWord, products);
+        
+    }
+}
+
+class Trie{
+    Trie[] children;
+    List<Integer> indices;
+    
+    public Trie(){
+        children = new Trie[26];
+        indices  = new LinkedList();
+    }
+    
+    public void addWord(String word, int index){
+        Trie curr = this;
+        
+        for(char c : word.toCharArray()){
+            if(curr.children[c - 'a'] == null){
+                curr.children[c - 'a']  = new Trie();
+            }
+            
+            //add only three lexicographically minimums products index
+            if(curr.children[c - 'a'].indices.size() < 3)
+                curr.children[c - 'a'].indices.add(index);
+            
+            curr = curr.children[c - 'a'];
+        }
+    }
+    
+    public List<List<String>>  searchWord(String searchWord, String[] products){
+        List<List<String>>  result = new ArrayList();
+        Trie curr = this;
+        
+        for(char c : searchWord.toCharArray()){
+            List<String> wordList = new ArrayList();
+            
+            if(curr == null || curr.children[c - 'a'] == null){
+                curr = null;
+                result.add(wordList);
+                continue;
+            }
+            
+            for(int index : curr.children[c - 'a'].indices){
+                wordList.add(products[index]);
+            }
+                
+            curr = curr.children[c - 'a'];
+            result.add(wordList);
+            
+        }
+        
+        return result;
+    }
+}

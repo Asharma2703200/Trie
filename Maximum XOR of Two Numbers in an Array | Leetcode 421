@@ -1,0 +1,104 @@
+import java.io.*;
+import java.util.*;
+class Trie{
+    
+    private class TrieNode{
+        TrieNode left , right;
+    }
+    final private TrieNode root;
+    public Trie(){
+        root = new TrieNode();
+    }
+    
+    public void insert(int  val){
+        TrieNode cur = root;
+        int bitindex = 30;
+        
+        while(bitindex >= 0){
+            
+            int mask = 1<<bitindex;
+            
+            int bit = (mask&val)>0?1:0;
+            
+            if(bit == 0){
+                if(cur.left == null){
+                    cur.left = new TrieNode();
+                }
+                cur = cur.left;
+            }else{
+                if(cur.right == null){
+                    cur.right = new TrieNode();
+                }
+                cur = cur.right;
+            }
+            
+            bitindex--;
+        }
+        
+    }
+    
+    public int query(int find){
+        TrieNode cur = root;
+        int bitindex = 30;
+        int ans = 0;
+        
+        while(bitindex >= 0){
+            
+            int mask = 1<<bitindex;
+            int bit = (mask&find)>0?1:0;
+            
+            if(bit == 0){
+                if(cur.left != null){
+                    cur = cur.left;
+                }else{
+                    cur = cur.right;
+                    ans |= mask;
+                }
+            }else{
+                if(cur.right != null){
+                    cur = cur.right;
+                    ans |= mask;
+                }else{
+                    cur = cur.left;
+                }
+            }
+            
+            bitindex--;
+        }
+        return ans;
+    }
+    
+}
+public class Main {
+  public static int findMaximumXOR(int[] nums) {
+    // write your code here
+    
+    Trie trie = new Trie();
+    
+    for(int val : nums){
+        trie.insert(val);
+    }
+    
+    int max = 0;
+    
+    for(int val : nums){
+        int find = Integer.MAX_VALUE ^ val;
+        int res = trie.query(find);
+        max = Math.max(max , res ^ val);
+    }
+
+    return max;
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(read.readLine().trim());
+    int arr[] = new int[n];
+    for (int i = 0; i < n; i++)arr[i] = Integer.parseInt(read.readLine().trim());
+
+    int result = findMaximumXOR(arr);
+    System.out.println(result);
+
+  }
+}

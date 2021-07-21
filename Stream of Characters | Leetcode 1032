@@ -1,0 +1,53 @@
+class StreamChecker {
+
+    class Trie{
+        
+        Node root;
+        List<Node> validNodes;
+        class Node{
+            Node[] childs = new Node[26];
+            boolean isWord;
+        }
+        
+        Trie(String[] words){
+            root = new Node();
+            validNodes = new ArrayList();
+            for(String word:words){
+                Node curr=root;
+                for(int i=0;i<word.length();i++){
+                    if(curr.childs[word.charAt(i)-'a']==null)
+                        curr.childs[word.charAt(i)-'a']=new Node();
+                    curr=curr.childs[word.charAt(i)-'a'];
+                }
+                curr.isWord=true;
+            }
+        }
+        
+        boolean query(char ch){
+            List<Node> newValidNodes = new ArrayList();
+            for(Node curr:validNodes){
+                if(curr.childs[ch-'a']!=null){
+                    newValidNodes.add(curr.childs[ch-'a']);
+                }
+            }
+            if(root.childs[ch-'a']!=null)
+                newValidNodes.add(root.childs[ch-'a']);
+            validNodes=newValidNodes;
+            for(Node curr:validNodes){
+                if(curr.isWord==true)
+                    return true;
+            }
+            return false;
+        }
+        
+    }
+    
+    Trie trie;
+    public StreamChecker(String[] words) {
+        trie = new Trie(words);
+    }
+    
+    public boolean query(char letter) {
+        return trie.query(letter);
+    }
+}
